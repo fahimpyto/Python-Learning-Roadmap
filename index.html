@@ -1063,19 +1063,35 @@
             }
         });
 
-        // Auth System - API Based
+        // Auth System
+        const USERS_KEY = 'python_roadmap_users';
+        const PROGRESS_KEY = 'python_roadmap_progress';
         const CURRENT_USER_KEY = 'python_roadmap_current_user';
 
-        function getCurrentUser() {
-            return localStorage.getItem(CURRENT_USER_KEY) || null;
+        function getUsers() {
+            return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
         }
 
-        function setCurrentUser(username) {
-            localStorage.setItem(CURRENT_USER_KEY, username);
+        function saveUsers(users) {
+            localStorage.setItem(USERS_KEY, JSON.stringify(users));
         }
 
-        function clearCurrentUser() {
-            localStorage.removeItem(CURRENT_USER_KEY);
+        function getProgress() {
+            return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}');
+        }
+
+        function saveProgress(progress) {
+            localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+        }
+
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return hash.toString();
         }
 
         function openModal(modalId) {
@@ -1107,8 +1123,8 @@
             el.classList.add('show');
         }
 
-        // Register - Call API
-        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        // Register
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const username = document.getElementById('regUsername').value.trim();
             const password = document.getElementById('regPassword').value;
@@ -1129,67 +1145,50 @@
                 return;
             }
 
-            try {
-                const res = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    showError('regError', data.error || 'Registration failed');
-                    return;
-                }
-
-                setCurrentUser(username);
-                closeModal('registerModal');
-                updateAuthUI();
-            } catch (err) {
-                showError('regError', 'Server error. Try again.');
+            const users = getUsers();
+            if (users.find(u => u.username === username)) {
+                showError('regError', 'Username already exists');
+                return;
             }
+
+            users.push({ username, password: simpleHash(password) });
+            saveUsers(users);
+
+            const progress = getProgress();
+            progress[username] = [];
+            saveProgress(progress);
+
+            localStorage.setItem(CURRENT_USER_KEY, username);
+            closeModal('registerModal');
+            updateAuthUI();
         });
 
-        // Login - Call API
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const username = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value;
 
-            try {
-                const res = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
+            const users = getUsers();
+            const user = users.find(u => u.username === username && u.password === simpleHash(password));
 
-                const data = await res.json();
-
-                if (!res.ok) {
-                    showError('loginError', data.error || 'Invalid credentials');
-                    return;
-                }
-
-                setCurrentUser(username);
-                closeModal('loginModal');
-                updateAuthUI();
-            } catch (err) {
-                showError('loginError', 'Server error. Try again.');
+            if (!user) {
+                showError('loginError', 'Invalid username or password');
+                return;
             }
+
+            localStorage.setItem(CURRENT_USER_KEY, username);
+            closeModal('loginModal');
+            updateAuthUI();
         });
 
         function logout() {
-            clearCurrentUser();
-            document.querySelectorAll('.day-checkbox').forEach(cb => {
-                cb.checked = false;
-                cb.closest('.day-item').classList.remove('completed');
-            });
+            localStorage.removeItem(CURRENT_USER_KEY);
             updateAuthUI();
         }
 
-        async function updateAuthUI() {
-            const currentUser = getCurrentUser();
+        function updateAuthUI() {
+            const currentUser = localStorage.getItem(CURRENT_USER_KEY);
             const loginBtns = document.getElementById('loginBtns');
             const userInfo = document.getElementById('userInfo');
             const userName = document.getElementById('userName');
@@ -1201,8 +1200,6 @@
                 userInfo.classList.add('show');
                 userName.textContent = currentUser;
                 checkboxes.forEach(cb => cb.classList.add('show'));
-                
-                await loadUserProgressFromAPI();
             } else {
                 loginBtns.classList.remove('hide');
                 loginBtns.classList.add('show');
@@ -1213,48 +1210,15 @@
             updateProgressDisplay();
         }
 
-        async function loadUserProgressFromAPI() {
-            const currentUser = getCurrentUser();
-            if (!currentUser) return;
-
-            try {
-                const res = await fetch(`/api/progress?username=${encodeURIComponent(currentUser)}`);
-                const data = await res.json();
-
-                if (data.success && data.progress) {
-                    const checkedDays = new Set(data.progress);
-
-                    document.querySelectorAll('.day-item').forEach(item => {
-                        const checkboxes = item.querySelectorAll('.day-checkbox');
-                        let allChecked = true;
-                        checkboxes.forEach(cb => {
-                            const day = parseInt(cb.dataset.day);
-                            if (checkedDays.has(day)) {
-                                cb.checked = true;
-                            } else {
-                                allChecked = false;
-                            }
-                        });
-                        if (allChecked && checkboxes.length > 0) {
-                            item.classList.add('completed');
-                        } else {
-                            item.classList.remove('completed');
-                        }
-                    });
-                }
-            } catch (err) {
-                console.error('Failed to load progress:', err);
-            }
-        }
-
         function updateProgressDisplay() {
-            const currentUser = getCurrentUser();
+            const currentUser = localStorage.getItem(CURRENT_USER_KEY);
             const progressText = document.getElementById('progressText');
             const progressContainer = document.getElementById('progressContainer');
 
             if (currentUser) {
-                const checkboxes = document.querySelectorAll('.day-checkbox:checked');
-                const completed = checkboxes.length;
+                const progress = getProgress();
+                const userProgress = progress[currentUser] || [];
+                const completed = userProgress.length;
                 const percent = Math.round((completed / 168) * 100);
                 progressText.textContent = `${completed}/168 (${percent}%)`;
                 progressContainer.style.display = 'block';
@@ -1265,8 +1229,8 @@
         }
 
         // Initialize
-        initializeCheckboxes();
         updateAuthUI();
+        initializeCheckboxes();
 
         function initializeCheckboxes() {
             const dayItems = document.querySelectorAll('.day-item');
@@ -1317,26 +1281,62 @@
             }
         }
 
-        async function toggleDayProgress(day, completed) {
-            const currentUser = getCurrentUser();
+        function toggleDayProgress(day, completed) {
+            const currentUser = localStorage.getItem(CURRENT_USER_KEY);
             if (!currentUser) return;
 
-            try {
-                await fetch('/api/progress', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        username: currentUser,
-                        day: day,
-                        completed: completed 
-                    })
-                });
-
-                updateProgressDisplay();
-            } catch (err) {
-                console.error('Failed to update progress:', err);
+            const progress = getProgress();
+            if (!progress[currentUser]) {
+                progress[currentUser] = [];
             }
+
+            const idx = progress[currentUser].indexOf(day);
+            if (completed && idx === -1) {
+                progress[currentUser].push(day);
+                progress[currentUser].sort((a, b) => a - b);
+            } else if (!completed && idx > -1) {
+                progress[currentUser].splice(idx, 1);
+            }
+
+            saveProgress(progress);
+            updateProgressDisplay();
         }
+
+        function loadUserProgress() {
+            const currentUser = localStorage.getItem(CURRENT_USER_KEY);
+            if (!currentUser) return;
+
+            const progress = getProgress();
+            const userProgress = progress[currentUser] || [];
+
+            const checkedDays = new Set(userProgress);
+
+            document.querySelectorAll('.day-item').forEach(item => {
+                const checkboxes = item.querySelectorAll('.day-checkbox');
+                let allChecked = true;
+                checkboxes.forEach(cb => {
+                    const day = parseInt(cb.dataset.day);
+                    if (checkedDays.has(day)) {
+                        cb.checked = true;
+                    } else {
+                        allChecked = false;
+                    }
+                });
+                if (allChecked && checkboxes.length > 0) {
+                    item.classList.add('completed');
+                }
+            });
+        }
+
+        // Override updateAuthUI to also load progress
+        const originalUpdateAuthUI = updateAuthUI;
+        updateAuthUI = function() {
+            originalUpdateAuthUI();
+            const currentUser = localStorage.getItem(CURRENT_USER_KEY);
+            if (currentUser) {
+                loadUserProgress();
+            }
+        };
     </script>
 </body>
 </html>
