@@ -1234,37 +1234,51 @@
 
         function initializeCheckboxes() {
             const dayItems = document.querySelectorAll('.day-item');
-            let dayNum = 1;
 
-            dayItems.forEach((item, index) => {
+            dayItems.forEach((item) => {
                 const dayNumSpan = item.querySelector('.day-num');
                 const existingText = dayNumSpan.textContent;
-                const match = existingText.match(/Day\s*(\d+)/);
+                let days = [];
 
-                if (match) {
-                    dayNum = parseInt(match[1]);
-                } else if (existingText.includes('Day')) {
-                    const rangeMatch = existingText.match(/Days?\s*(\d+)(?:\s*-\s*(\d+))?/);
+                if (existingText.includes('-')) {
+                    const rangeMatch = existingText.match(/Day\s*(\d+)\s*-\s*(\d+)/);
                     if (rangeMatch) {
-                        dayNum = parseInt(rangeMatch[1]);
+                        const start = parseInt(rangeMatch[1]);
+                        const end = parseInt(rangeMatch[2]);
+                        for (let d = start; d <= end; d++) {
+                            days.push(d);
+                        }
+                    }
+                } else {
+                    const match = existingText.match(/Day\s*(\d+)/);
+                    if (match) {
+                        days = [parseInt(match[1])];
                     }
                 }
 
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.className = 'day-checkbox';
-                checkbox.dataset.day = dayNum;
-                checkbox.addEventListener('change', function() {
-                    toggleDayProgress(dayNum, this.checked);
-                    if (this.checked) {
-                        item.classList.add('completed');
-                    } else {
-                        item.classList.remove('completed');
-                    }
-                });
+                days.forEach(dayNum => {
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.className = 'day-checkbox';
+                    checkbox.dataset.day = dayNum;
+                    checkbox.addEventListener('change', function() {
+                        toggleDayProgress(dayNum, this.checked);
+                        updateItemCompletion(item);
+                    });
 
-                dayNumSpan.insertBefore(checkbox, dayNumSpan.firstChild);
+                    dayNumSpan.insertBefore(checkbox, dayNumSpan.firstChild);
+                });
             });
+        }
+
+        function updateItemCompletion(item) {
+            const checkboxes = item.querySelectorAll('.day-checkbox');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            if (allChecked && checkboxes.length > 0) {
+                item.classList.add('completed');
+            } else {
+                item.classList.remove('completed');
+            }
         }
 
         function toggleDayProgress(day, completed) {
@@ -1295,11 +1309,21 @@
             const progress = getProgress();
             const userProgress = progress[currentUser] || [];
 
-            userProgress.forEach(day => {
-                const checkbox = document.querySelector(`.day-checkbox[data-day="${day}"]`);
-                if (checkbox) {
-                    checkbox.checked = true;
-                    checkbox.closest('.day-item').classList.add('completed');
+            const checkedDays = new Set(userProgress);
+
+            document.querySelectorAll('.day-item').forEach(item => {
+                const checkboxes = item.querySelectorAll('.day-checkbox');
+                let allChecked = true;
+                checkboxes.forEach(cb => {
+                    const day = parseInt(cb.dataset.day);
+                    if (checkedDays.has(day)) {
+                        cb.checked = true;
+                    } else {
+                        allChecked = false;
+                    }
+                });
+                if (allChecked && checkboxes.length > 0) {
+                    item.classList.add('completed');
                 }
             });
         }
