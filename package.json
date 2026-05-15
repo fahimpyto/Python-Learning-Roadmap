@@ -1,0 +1,24 @@
+{
+  "name": "python_roadmap",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fahimpyto/Python-Learning-Roadmap.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/fahimpyto/Python-Learning-Roadmap/issues"
+  },
+  "homepage": "https://github.com/fahimpyto/Python-Learning-Roadmap#readme",
+  "dependencies": {
+    "@vercel/postgres": "^0.10.0"
+  }
+}
