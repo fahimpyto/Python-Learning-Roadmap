@@ -487,6 +487,34 @@
             color: var(--text-muted);
             font-family: var(--font-code);
         }
+
+        /* --- Day Checkboxes --- */
+        .day-checkbox {
+            display: none;
+            margin-right: 0.75rem;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--accent-success);
+        }
+
+        .day-checkbox.show {
+            display: inline-block;
+        }
+
+        .day-item.completed .day-num {
+            color: var(--accent-success);
+        }
+
+        .day-item {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .day-item > .day-num {
+            display: flex;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -1164,16 +1192,19 @@
             const loginBtns = document.getElementById('loginBtns');
             const userInfo = document.getElementById('userInfo');
             const userName = document.getElementById('userName');
+            const checkboxes = document.querySelectorAll('.day-checkbox');
 
             if (currentUser) {
                 loginBtns.classList.remove('show');
                 loginBtns.classList.add('hide');
                 userInfo.classList.add('show');
                 userName.textContent = currentUser;
+                checkboxes.forEach(cb => cb.classList.add('show'));
             } else {
                 loginBtns.classList.remove('hide');
                 loginBtns.classList.add('show');
                 userInfo.classList.remove('show');
+                checkboxes.forEach(cb => cb.classList.remove('show'));
             }
 
             updateProgressDisplay();
@@ -1199,6 +1230,89 @@
 
         // Initialize
         updateAuthUI();
+        initializeCheckboxes();
+
+        function initializeCheckboxes() {
+            const dayItems = document.querySelectorAll('.day-item');
+            let dayNum = 1;
+
+            dayItems.forEach((item, index) => {
+                const dayNumSpan = item.querySelector('.day-num');
+                const existingText = dayNumSpan.textContent;
+                const match = existingText.match(/Day\s*(\d+)/);
+
+                if (match) {
+                    dayNum = parseInt(match[1]);
+                } else if (existingText.includes('Day')) {
+                    const rangeMatch = existingText.match(/Days?\s*(\d+)(?:\s*-\s*(\d+))?/);
+                    if (rangeMatch) {
+                        dayNum = parseInt(rangeMatch[1]);
+                    }
+                }
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'day-checkbox';
+                checkbox.dataset.day = dayNum;
+                checkbox.addEventListener('change', function() {
+                    toggleDayProgress(dayNum, this.checked);
+                    if (this.checked) {
+                        item.classList.add('completed');
+                    } else {
+                        item.classList.remove('completed');
+                    }
+                });
+
+                dayNumSpan.insertBefore(checkbox, dayNumSpan.firstChild);
+            });
+        }
+
+        function toggleDayProgress(day, completed) {
+            const currentUser = localStorage.getItem(CURRENT_USER_KEY);
+            if (!currentUser) return;
+
+            const progress = getProgress();
+            if (!progress[currentUser]) {
+                progress[currentUser] = [];
+            }
+
+            const idx = progress[currentUser].indexOf(day);
+            if (completed && idx === -1) {
+                progress[currentUser].push(day);
+                progress[currentUser].sort((a, b) => a - b);
+            } else if (!completed && idx > -1) {
+                progress[currentUser].splice(idx, 1);
+            }
+
+            saveProgress(progress);
+            updateProgressDisplay();
+        }
+
+        function loadUserProgress() {
+            const currentUser = localStorage.getItem(CURRENT_USER_KEY);
+            if (!currentUser) return;
+
+            const progress = getProgress();
+            const userProgress = progress[currentUser] || [];
+
+            userProgress.forEach(day => {
+                const checkbox = document.querySelector(`.day-checkbox[data-day="${day}"]`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                    checkbox.closest('.day-item').classList.add('completed');
+                }
+            });
+        }
+
+        // Override updateAuthUI to also load progress
+        const originalUpdateAuthUI = updateAuthUI;
+        updateAuthUI = function() {
+            originalUpdateAuthUI();
+            const currentUser = localStorage.getItem(CURRENT_USER_KEY);
+            if (currentUser) {
+                loadUserProgress();
+            }
+        };
     </script>
 </body>
 </html>
