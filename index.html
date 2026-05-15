@@ -312,7 +312,180 @@
             header { padding: 0 1rem; }
             footer { padding: 0 1rem; }
             .slide-content { padding: 1rem; }
-            .progress-container { display: none; } /* Hide progress on very small screens to save space */
+            .progress-container { display: none; }
+        }
+
+        /* --- Auth Modals --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-slide);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal h2 {
+            color: var(--accent-primary);
+            margin-bottom: 1.5rem;
+            border: none;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: #000;
+            border-color: var(--accent-primary);
+        }
+
+        .btn-primary:hover {
+            background: #0ea5e9;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: var(--text-main);
+            background: none;
+        }
+
+        .modal .switch-text {
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .modal .switch-text a {
+            color: var(--accent-primary);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .modal .switch-text a:hover {
+            text-decoration: underline;
+        }
+
+        .error-msg {
+            color: #f87171;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        /* --- Header User Section --- */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-info.show {
+            display: flex;
+        }
+
+        .user-name {
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+        }
+
+        .login-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .login-btns.show {
+            display: flex;
+        }
+
+        .login-btns.hide {
+            display: none;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-family: var(--font-code);
         }
     </style>
 </head>
@@ -322,8 +495,19 @@
         <div class="logo">
             <span>🐍</span> Python Mastery
         </div>
-        <div class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
+        <div class="header-right">
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <span class="progress-text" id="progressText"></span>
+            <div class="login-btns" id="loginBtns">
+                <button onclick="openModal('loginModal')">Login</button>
+                <button onclick="openModal('registerModal')">Register</button>
+            </div>
+            <div class="user-info" id="userInfo">
+                <span class="user-name" id="userName"></span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
         </div>
     </header>
 
@@ -739,6 +923,60 @@
         </div>
     </footer>
 
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <input type="text" id="loginUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <div class="error-msg" id="loginError"></div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary">Login</button>
+                    <button type="button" onclick="closeModal('loginModal')">Cancel</button>
+                </div>
+            </form>
+            <div class="switch-text">
+                Don't have an account? <a onclick="switchModal('loginModal', 'registerModal')">Register</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal-overlay" id="registerModal">
+        <div class="modal">
+            <h2>Register</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regUsername">Username</label>
+                    <input type="text" id="regUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <input type="password" id="regPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="regConfirm">Confirm Password</label>
+                    <input type="password" id="regConfirm" required>
+                </div>
+                <div class="error-msg" id="regError"></div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary">Register</button>
+                    <button type="button" onclick="closeModal('registerModal')">Cancel</button>
+                </div>
+            </form>
+            <div class="switch-text">
+                Already have an account? <a onclick="switchModal('registerModal', 'loginModal')">Login</a>
+            </div>
+        </div>
+    </div>
+
     <script>
         // State
         let currentSlide = 0;
@@ -796,6 +1034,171 @@
                 changeSlide(-1);
             }
         });
+
+        // Auth System
+        const USERS_KEY = 'python_roadmap_users';
+        const PROGRESS_KEY = 'python_roadmap_progress';
+        const CURRENT_USER_KEY = 'python_roadmap_current_user';
+
+        function getUsers() {
+            return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem(USERS_KEY, JSON.stringify(users));
+        }
+
+        function getProgress() {
+            return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}');
+        }
+
+        function saveProgress(progress) {
+            localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+        }
+
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return hash.toString();
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            clearErrors();
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            clearErrors();
+        }
+
+        function switchModal(fromModal, toModal) {
+            closeModal(fromModal);
+            setTimeout(() => openModal(toModal), 200);
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error-msg').forEach(el => {
+                el.classList.remove('show');
+                el.textContent = '';
+            });
+            document.querySelectorAll('form').forEach(el => el.reset());
+        }
+
+        function showError(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.classList.add('show');
+        }
+
+        // Register
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regConfirm').value;
+
+            if (!username || !password) {
+                showError('regError', 'Please fill in all fields');
+                return;
+            }
+
+            if (password !== confirm) {
+                showError('regError', 'Passwords do not match');
+                return;
+            }
+
+            if (password.length < 4) {
+                showError('regError', 'Password must be at least 4 characters');
+                return;
+            }
+
+            const users = getUsers();
+            if (users.find(u => u.username === username)) {
+                showError('regError', 'Username already exists');
+                return;
+            }
+
+            users.push({ username, password: simpleHash(password) });
+            saveUsers(users);
+
+            const progress = getProgress();
+            progress[username] = [];
+            saveProgress(progress);
+
+            localStorage.setItem(CURRENT_USER_KEY, username);
+            closeModal('registerModal');
+            updateAuthUI();
+        });
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            const users = getUsers();
+            const user = users.find(u => u.username === username && u.password === simpleHash(password));
+
+            if (!user) {
+                showError('loginError', 'Invalid username or password');
+                return;
+            }
+
+            localStorage.setItem(CURRENT_USER_KEY, username);
+            closeModal('loginModal');
+            updateAuthUI();
+        });
+
+        function logout() {
+            localStorage.removeItem(CURRENT_USER_KEY);
+            updateAuthUI();
+        }
+
+        function updateAuthUI() {
+            const currentUser = localStorage.getItem(CURRENT_USER_KEY);
+            const loginBtns = document.getElementById('loginBtns');
+            const userInfo = document.getElementById('userInfo');
+            const userName = document.getElementById('userName');
+
+            if (currentUser) {
+                loginBtns.classList.remove('show');
+                loginBtns.classList.add('hide');
+                userInfo.classList.add('show');
+                userName.textContent = currentUser;
+            } else {
+                loginBtns.classList.remove('hide');
+                loginBtns.classList.add('show');
+                userInfo.classList.remove('show');
+            }
+
+            updateProgressDisplay();
+        }
+
+        function updateProgressDisplay() {
+            const currentUser = localStorage.getItem(CURRENT_USER_KEY);
+            const progressText = document.getElementById('progressText');
+            const progressContainer = document.getElementById('progressContainer');
+
+            if (currentUser) {
+                const progress = getProgress();
+                const userProgress = progress[currentUser] || [];
+                const completed = userProgress.length;
+                const percent = Math.round((completed / 168) * 100);
+                progressText.textContent = `${completed}/168 (${percent}%)`;
+                progressContainer.style.display = 'block';
+            } else {
+                progressText.textContent = '';
+                progressContainer.style.display = 'none';
+            }
+        }
+
+        // Initialize
+        updateAuthUI();
     </script>
 </body>
 </html>
