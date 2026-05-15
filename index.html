@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Mastery Roadmap | 6-Month Journey</title>
+    <style>
+        :root {
+            /* Palette - Dark IDE Theme */
+            --bg-body: #0f172a;
+            --bg-slide: #1e293b;
+            --bg-header: #334155;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent-primary: #38bdf8; /* Cyan/Blue */
+            --accent-secondary: #fbbf24; /* Amber */
+            --accent-tertiary: #a78bfa; /* Purple */
+            --accent-success: #34d399; /* Green */
+            --border-color: #475569;
+            --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-code: 'Consolas', 'Monaco', 'Courier New', monospace;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* App-like feel */
+        }
+
+        /* --- Header --- */
+        header {
+            height: 60px;
+            background-color: var(--bg-header);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--accent-primary);
+        }
+
+        .progress-container {
+            width: 200px;
+            height: 6px;
+            background-color: var(--bg-body);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--accent-primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* --- Main Slide Area --- */
+        main {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            max-width: 900px;
+            height: 100%;
+            max-height: 80vh; /* Keep it contained */
+            background-color: var(--bg-slide);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            pointer-events: none;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Internal scroll only */
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: all;
+            z-index: 10;
+        }
+
+        /* Slide Internal Scroll */
+        .slide-content {
+            padding: 2rem;
+            overflow-y: auto;
+            flex: 1;
+            /* Custom Scrollbar */
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-color) var(--bg-slide);
+        }
+
+        .slide-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .slide-content::-webkit-scrollbar-track {
+            background: var(--bg-slide);
+        }
+        .slide-content::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 4px;
+        }
+
+        /* --- Typography & Elements --- */
+        h1, h2, h3 {
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        h1 { font-size: 2rem; color: var(--accent-primary); }
+        h2 { font-size: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+        h3 { font-size: 1.1rem; color: var(--accent-secondary); margin-top: 1.5rem; }
+
+        p {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+        }
+
+        ul {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.75rem;
+            padding-left: 1.2rem;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        li::before {
+            content: "▹";
+            position: absolute;
+            left: 0;
+            color: var(--accent-primary);
+        }
+
+        /* Special Tags */
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-right: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag.research { background-color: rgba(167, 139, 250, 0.2); color: var(--accent-tertiary); border: 1px solid var(--accent-tertiary); }
+        .tag.project { background-color: rgba(52, 211, 153, 0.2); color: var(--accent-success); border: 1px solid var(--accent-success); }
+        .tag.code { background-color: rgba(56, 189, 248, 0.2); color: var(--accent-primary); border: 1px solid var(--accent-primary); }
+
+        code {
+            font-family: var(--font-code);
+            background-color: rgba(0,0,0,0.3);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 0.9em;
+        }
+
+        .week-block {
+            background: rgba(255,255,255,0.03);
+            border-left: 3px solid var(--border-color);
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 8px 8px 0;
+            transition: border-color 0.2s;
+        }
+        
+        .week-block:hover {
+            border-left-color: var(--accent-primary);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .day-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .day-num {
+            font-weight: bold;
+            color: var(--text-main);
+            min-width: 60px;
+            font-family: var(--font-code);
+        }
+
+        /* --- Slide 1 Specifics --- */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-body);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-secondary);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- Footer Controls --- */
+        footer {
+            height: 70px;
+            background-color: var(--bg-header);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            flex-shrink: 0;
+        }
+
+        .slide-indicator {
+            font-family: var(--font-code);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        button {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: var(--font-main);
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        button:hover {
+            background-color: var(--accent-primary);
+            color: #000;
+            border-color: var(--accent-primary);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: var(--bg-body);
+            color: var(--text-muted);
+            border-color: var(--border-color);
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.5rem; }
+            h2 { font-size: 1.2rem; }
+            header { padding: 0 1rem; }
+            footer { padding: 0 1rem; }
+            .slide-content { padding: 1rem; }
+            .progress-container { display: none; } /* Hide progress on very small screens to save space */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <span>🐍</span> Python Mastery
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </header>
+
+    <main>
+        <!-- SLIDE 1: Overview -->
+        <section class="slide active" id="slide-0">
+            <div class="slide-content">
+                <h1>Program Overview</h1>
+                <p>A comprehensive, slide-based, day-by-day progress map designed for a 6-month (24-week) journey at 1 hour per day.</p>
+                
+                <div class="overview-grid">
+                    <div class="stat-card">
+                        <span class="value">24</span>
+                        <span class="label">Weeks</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="value">1h</span>
+                        <span class="label">Per Day</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="value">Zero</span>
+                        <span class="label">To ML Model</span>
+                    </div>
+                </div>
+
+                <div class="week-block" style="margin-top: 2rem; border-color: var(--accent-primary);">
+                    <h3>Daily Routine</h3>
+                    <ul>
+                        <li><strong>10 Mins:</strong> Review code from yesterday.</li>
+                        <li><strong>40 Mins:</strong> New Concept Lesson & Coding.</li>
+                        <li><strong>10 Mins:</strong> "Deep Research" or Tinker (Break it, fix it).</li>
+                    </ul>
+                </div>
+
+                <div class="week-block" style="border-color: var(--accent-secondary);">
+                    <h3>Structure</h3>
+                    <p><span class="tag code">5 Days</span> Learning New Concepts</p>
+                    <p style="margin-top: 0.5rem;"><span class="tag project">2 Days</span> Deep Practice (Projects/Debugging)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: Phase 1 -->
+        <section class="slide" id="slide-1">
+            <div class="slide-content">
+                <h1>Phase 1: Fundamentals</h1>
+                <p><strong>Weeks 1–2</strong> | Focus: Environment setup and basic syntax.</p>
+
+                <div class="week-block">
+                    <h3>Week 1: The Foundation</h3>
+                    <div class="day-item"><span class="day-num">Day 1</span> <span><span class="tag code">Setup</span> Install Python, VS Code. Run <code>print("Hello World")</code>. <br><em>Research: How does the Python interpreter work?</em></span></div>
+                    <div class="day-item"><span class="day-num">Day 2</span> <span><strong>Variables.</strong> Creating variables, snake_case naming. <br><em>Practice: Store name, age, job.</em></span></div>
+                    <div class="day-item"><span class="day-num">Day 3</span> <span><strong>Data Types (Strings).</strong> Indexing, slicing, concatenation.</span></div>
+                    <div class="day-item"><span class="day-num">Day 4</span> <span><strong>Data Types (Numbers).</strong> Integers vs Floats. Basic math.</span></div>
+                    <div class="day-item"><span class="day-num">Day 5</span> <span><strong>I/O.</strong> <code>input()</code> function, f-strings.</span></div>
+                    <div class="day-item"><span class="day-num">Day 6</span> <span><strong>Type Conversion.</strong> Strings <code><-></code> Numbers.</span></div>
+                    <div class="day-item"><span class="day-num">Day 7</span> <span><span class="tag project">Project</span> Simple Calculator (Add, Sub, Mul, Div).</span></div>
+                </div>
+
+                <div class="week-block">
+                    <h3>Week 2: Tools & Logic</h3>
+                    <div class="day-item"><span class="day-num">Day 8</span> <span><strong>Comparison Operators.</strong> <code>==</code>, <code>!=</code>, <code>></code>, <code><</code>. Booleans.</span></div>
+                    <div class="day-item"><span class="day-num">Day 9</span> <span><strong>Logical Operators.</strong> <code>and</code>, <code>or</code>, <code>not</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 10</span> <span><span class="tag code">Intro Jupyter</span> Setup notebook, run markdown. <br><em>Research: Notebooks vs Scripts.</em></span></div>
+                    <div class="day-item"><span class="day-num">Day 11</span> <span><strong>If/Else Statements.</strong> Controlling code flow.</span></div>
+                    <div class="day-item"><span class="day-num">Day 12</span> <span><strong>Elif & Nested Ifs.</strong> Handling multiple conditions.</span></div>
+                    <div class="day-item"><span class="day-num">Day 13</span> <span><span class="tag project">Project</span> Age Checker & BMI Calculator.</span></div>
+                    <div class="day-item"><span class="day-num">Day 14</span> <span><strong>Review & Debug.</strong> Clean up Week 1-2 code.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: Phase 2 -->
+        <section class="slide" id="slide-2">
+            <div class="slide-content">
+                <h1>Phase 2: Logic & Problem Solving</h1>
+                <p><strong>Weeks 3–4</strong> | Focus: Loops and algorithmic thinking.</p>
+
+                <div class="week-block">
+                    <h3>Week 3: Loops</h3>
+                    <div class="day-item"><span class="day-num">Day 15</span> <span><strong>While Loops.</strong> Infinite loops, <code>break</code>/<code>continue</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 16</span> <span><strong>For Loops.</strong> Iterating ranges and strings.</span></div>
+                    <div class="day-item"><span class="day-num">Day 17</span> <span><strong>Nested Loops.</strong> Loops inside loops. <br><em>Research: Time complexity (Big O) basics.</em></span></div>
+                    <div class="day-item"><span class="day-num">Day 18</span> <span><strong>Pattern Printing.</strong> Print triangles/squares with <code>*</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 19</span> <span><strong>Problem Solving.</strong> Solve 3 challenges on Codewars/HackerRank.</span></div>
+                    <div class="day-item"><span class="day-num">Day 20</span> <span><span class="tag project">Project</span> Multiplication Table Generator.</span></div>
+                    <div class="day-item"><span class="day-num">Day 21</span> <span><span class="tag project">Project</span> Number Guessing Game (<code>random</code> module).</span></div>
+                </div>
+
+                <div class="week-block">
+                    <h3>Week 4: Advanced Logic</h3>
+                    <div class="day-item"><span class="day-num">Day 22</span> <span><strong>Lists 1.</strong> Indexing, slicing, modifying.</span></div>
+                    <div class="day-item"><span class="day-num">Day 23</span> <span><strong>Lists 2.</strong> Methods: <code>.append()</code>, <code>.pop()</code>, <code>.sort()</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 24</span> <span><strong>Iterating Lists.</strong> Using <code>for</code> loops.</span></div>
+                    <div class="day-item"><span class="day-num">Day 25</span> <span><strong>List Comprehensions.</strong> Creating lists in one line.</span></div>
+                    <div class="day-item"><span class="day-num">Day 26</span> <span><span class="tag project">Project</span> Quiz App (Store questions in a list).</span></div>
+                    <div class="day-item"><span class="day-num">Day 27</span> <span><strong>Code Challenge.</strong> "FizzBuzz" problem.</span></div>
+                    <div class="day-item"><span class="day-num">Day 28</span> <span><span class="tag research">Research</span> "Pep 8" style guide. Cleanup.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: Phase 3 -->
+        <section class="slide" id="slide-3">
+            <div class="slide-content">
+                <h1>Phase 3: Functions & Data Structures</h1>
+                <p><strong>Weeks 5–7</strong> | Focus: Modular code and complex data storage.</p>
+
+                <div class="week-block">
+                    <h3>Week 5: Functions</h3>
+                    <div class="day-item"><span class="day-num">Day 29</span> <span><strong>Defining Functions.</strong> <code>def</code>, Parameters vs Arguments.</span></div>
+                    <div class="day-item"><span class="day-num">Day 30</span> <span><strong>Return Values.</strong> <code>return</code> vs <code>print</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 31</span> <span><strong>Scope.</strong> Local vs Global. <br><em>Research: The LEGB rule.</em></span></div>
+                    <div class="day-item"><span class="day-num">Day 32</span> <span><strong>Defaults & Args.</strong> <code>*args</code> and <code>**kwargs</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 33</span> <span><strong>Lambda Functions.</strong> Anonymous functions.</span></div>
+                    <div class="day-item"><span class="day-num">Day 34</span> <span><strong>Practice.</strong> Refactor Calculator and Quiz App to use functions.</span></div>
+                    <div class="day-item"><span class="day-num">Day 35</span> <span><span class="tag research">Deep Dive</span> Research "Recursion" (Concept only).</span></div>
+                </div>
+
+                <div class="week-block">
+                    <h3>Week 6: Dictionaries & Sets</h3>
+                    <div class="day-item"><span class="day-num">Day 36</span> <span><strong>Dictionaries 1.</strong> Key-value pairs.</span></div>
+                    <div class="day-item"><span class="day-num">Day 37</span> <span><strong>Dictionaries 2.</strong> <code>.keys()</code>, <code>.values()</code>, <code>.items()</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 38</span> <span><strong>Nested Dictionaries.</strong> Dictionaries inside dictionaries.</span></div>
+                    <div class="day-item"><span class="day-num">Day 39</span> <span><strong>Sets.</strong> Unique items, union, intersection.</span></div>
+                    <div class="day-item"><span class="day-num">Day 40</span> <span><strong>Tuples.</strong> Immutable lists.</span></div>
+                    <div class="day-item"><span class="day-num">Day 41</span> <span><span class="tag project">Project</span> Contact Book (Dictionary based).</span></div>
+                    <div class="day-item"><span class="day-num">Day 42</span> <span><span class="tag project">Project</span> To-Do App.</span></div>
+                </div>
+
+                <div class="week-block">
+                    <h3>Week 7: Integration</h3>
+                    <div class="day-item"><span class="day-num">Day 43-44</span> <span><strong>Student Mgmt System.</strong> List of dictionaries, calculate grades.</span></div>
+                    <div class="day-item"><span class="day-num">Day 45</span> <span><strong>Error Handling.</strong> <code>try</code>, <code>except</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 46</span> <span><strong>File I/O.</strong> <code>open()</code>, <code>read()</code>, <code>write()</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 47</span> <span><strong>Saving Data.</strong> Save Contact Book to text file.</span></div>
+                    <div class="day-item"><span class="day-num">Day 48</span> <span><span class="tag project">Project</span> Login System (File based).</span></div>
+                    <div class="day-item"><span class="day-num">Day 49</span> <span><strong>Review.</strong> Lists vs. Dictionaries.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: Phase 4 -->
+        <section class="slide" id="slide-4">
+            <div class="slide-content">
+                <h1>Phase 4: OOP & File Handling</h1>
+                <p><strong>Weeks 8–9</strong> | Focus: Object-Oriented Programming and CSVs.</p>
+
+                <div class="week-block">
+                    <h3>Week 8: OOP</h3>
+                    <div class="day-item"><span class="day-num">Day 50</span> <span><strong>Classes & Objects.</strong> Blueprint analogy. <code>__init__</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 51</span> <span><strong>Attributes & Methods.</strong> The <code>self</code> keyword.</span></div>
+                    <div class="day-item"><span class="day-num">Day 52</span> <span><strong>Inheritance.</strong> Parent/Child classes.</span></div>
+                    <div class="day-item"><span class="day-num">Day 53</span> <span><strong>Polymorphism.</strong> Conceptual overview. <br><em>Research: Why use OOP?</em></span></div>
+                    <div class="day-item"><span class="day-num">Day 54</span> <span><strong>Practice.</strong> Convert Student System to Class-based.</span></div>
+                    <div class="day-item"><span class="day-num">Day 55</span> <span><span class="tag project">Project</span> Library System (Book/User classes).</span></div>
+                    <div class="day-item"><span class="day-num">Day 56</span> <span><span class="tag research">Research</span> Design Patterns (Singleton, Factory) - Theory.</span></div>
+                </div>
+
+                <div class="week-block">
+                    <h3>Week 9: CSV & Modules</h3>
+                    <div class="day-item"><span class="day-num">Day 57</span> <span><strong>CSV Module.</strong> Reading files row by row.</span></div>
+                    <div class="day-item"><span class="day-num">Day 58</span> <span><strong>CSV Module.</strong> Writing data.</span></div>
+                    <div class="day-item"><span class="day-num">Day 59</span> <span><span class="tag project">Project</span> Notes App (Timestamps to CSV).</span></div>
+                    <div class="day-item"><span class="day-num">Day 60</span> <span><strong>Standard Libs.</strong> <code>os</code>, <code>sys</code>, <code>datetime</code>, <code>math</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 61</span> <span><strong>File Automation.</strong> Rename 100 files in a folder automatically.</span></div>
+                    <div class="day-item"><span class="day-num">Day 62</span> <span><span class="tag project">Project</span> File Organizer (Move .jpg/.txt automatically).</span></div>
+                    <div class="day-item"><span class="day-num">Day 63</span> <span><strong>Mid-Point Review.</strong> You can now script. Review syntax.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: Phase 5 -->
+        <section class="slide" id="slide-5">
+            <div class="slide-content">
+                <h1>Phase 5: Research & Data Analysis</h1>
+                <p><strong>Weeks 10–12</strong> | Focus: Transitioning to Data Science (Pandas).</p>
+
+                <div class="week-block">
+                    <h3>Week 10: NumPy</h3>
+                    <div class="day-item"><span class="day-num">Day 64</span> <span><strong>Env Setup.</strong> Anaconda or Virtual Environment.</span></div>
+                    <div class="day-item"><span class="day-num">Day 65</span> <span><strong>Intro to NumPy.</strong> Arrays vs Lists. Speed.</span></div>
+                    <div class="day-item"><span class="day-num">Day 66</span> <span><strong>NumPy Ops.</strong> Slicing, broadcasting, math.</span></div>
+                    <div class="day-item"><span class="day-num">Day 67</span> <span><strong>Statistics.</strong> Mean, median, std dev.</span></div>
+                    <div class="day-item"><span class="day-num">Day 68</span> <span><span class="tag research">Research</span> Find a dataset on Kaggle (e.g., Titanic).</span></div>
+                    <div class="day-item"><span class="day-num">Day 69</span> <span><strong>Practice.</strong> Load dataset into Python lists (Pure Python).</span></div>
+                    <div class="day-item"><span class="day-num">Day 70</span> <span><strong>Transition.</strong> Why lists are bad for big data.</span></div>
+                </div>
+
+                <div class="week-block">
+                    <h3>Week 11: Pandas Basics</h3>
+                    <div class="day-item"><span class="day-num">Day 71</span> <span><strong>Intro to Pandas.</strong> Series and DataFrames.</span></div>
+                    <div class="day-item"><span class="day-num">Day 72</span> <span><strong>Reading Data.</strong> <code>pd.read_csv()</code>, <code>pd.read_excel()</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 73</span> <span><strong>Viewing Data.</strong> <code>.head()</code>, <code>.info()</code>, <code>.describe()</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 74</span> <span><strong>Selection.</strong> <code>loc</code> vs <code>iloc</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 75</span> <span><strong>Filtering.</strong> Boolean indexing.</span></div>
+                    <div class="day-item"><span class="day-num">Day 76-77</span> <span><strong>Practice.</strong> Titanic dataset. Average age, Multiple filters.</span></div>
+                </div>
+
+                <div class="week-block">
+                    <h3>Week 12: Data Cleaning</h3>
+                    <div class="day-item"><span class="day-num">Day 78</span> <span><strong>Missing Data.</strong> <code>.isnull()</code>, <code>.fillna()</code>, <code>.dropna()</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 79</span> <span><strong>Cleaning.</strong> Duplicates, type changes.</span></div>
+                    <div class="day-item"><span class="day-num">Day 80</span> <span><strong>Feature Engineering.</strong> New columns from existing.</span></div>
+                    <div class="day-item"><span class="day-num">Day 81</span> <span><strong>GroupBy.</strong> Split-Apply-Combine.</span></div>
+                    <div class="day-item"><span class="day-num">Day 82</span> <span><strong>Merging Data.</strong> <code>.merge()</code> and <code>.concat()</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 83</span> <span><span class="tag project">Project</span> Sales Data Analysis (Clean messy Excel).</span></div>
+                    <div class="day-item"><span class="day-num">Day 84</span> <span><span class="tag research">Research</span> "Tidy Data" principles.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: Phase 6 -->
+        <section class="slide" id="slide-6">
+            <div class="slide-content">
+                <h1>Phase 6: Data Visualization</h1>
+                <p><strong>Weeks 13–14</strong> | Focus: Telling stories with data.</p>
+
+                <div class="week-block">
+                    <h3>Week 13: Matplotlib</h3>
+                    <div class="day-item"><span class="day-num">Day 85</span> <span><strong>Intro to Plots.</strong> Figure and Axes anatomy.</span></div>
+                    <div class="day-item"><span class="day-num">Day 86</span> <span><strong>Line Charts.</strong> Trends over time.</span></div>
+                    <div class="day-item"><span class="day-num">Day 87</span> <span><strong>Bar Charts.</strong> Categorical comparison.</span></div>
+                    <div class="day-item"><span class="day-num">Day 88</span> <span><strong>Scatter Plots.</strong> Correlation.</span></div>
+                    <div class="day-item"><span class="day-num">Day 89</span> <span><strong>Histograms.</strong> Distribution.</span></div>
+                    <div class="day-item"><span class="day-num">Day 90</span> <span><strong>Styling.</strong> Colors, markers, grids.</span></div>
+                    <div class="day-item"><span class="day-num">Day 91</span> <span><span class="tag project">Project</span> Visualize Titanic dataset.</span></div>
+                </div>
+
+                <div class="week-block">
+                    <h3>Week 14: Seaborn & Plotly</h3>
+                    <div class="day-item"><span class="day-num">Day 92</span> <span><strong>Intro to Seaborn.</strong> Statistical plotting.</span></div>
+                    <div class="day-item"><span class="day-num">Day 93</span> <span><strong>Heatmaps.</strong> Correlation matrices.</span></div>
+                    <div class="day-item"><span class="day-num">Day 94</span> <span><strong>Box/Violin Plots.</strong> Outliers.</span></div>
+                    <div class="day-item"><span class="day-num">Day 95</span> <span><strong>Intro to Plotly.</strong> Interactive charts.</span></div>
+                    <div class="day-item"><span class="day-num">Day 96</span> <span><strong>Plotly Express.</strong> Quick dashboards.</span></div>
+                    <div class="day-item"><span class="day-num">Day 97</span> <span><span class="tag project">Project</span> COVID Analysis Dashboard.</span></div>
+                    <div class="day-item"><span class="day-num">Day 98</span> <span><strong>Review.</strong> Compare Matplotlib vs Seaborn vs Plotly.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: Phase 7 -->
+        <section class="slide" id="slide-7">
+            <div class="slide-content">
+                <h1>Phase 7: APIs & Web Scraping</h1>
+                <p><strong>Weeks 15–16</strong> | Focus: Collecting data from the web.</p>
+
+                <div class="week-block">
+                    <h3>Week 15: APIs</h3>
+                    <div class="day-item"><span class="day-num">Day 99</span> <span><strong>REST APIs.</strong> Request/Response cycle. Status codes.</span></div>
+                    <div class="day-item"><span class="day-num">Day 100</span> <span><strong>Requests Lib.</strong> <code>requests.get()</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 101</span> <span><strong>JSON Handling.</strong> Parsing to Dictionaries.</span></div>
+                    <div class="day-item"><span class="day-num">Day 102</span> <span><strong>API Parameters.</strong> Passing filters.</span></div>
+                    <div class="day-item"><span class="day-num">Day 103</span> <span><span class="tag project">Project</span> Weather App (OpenWeatherMap API).</span></div>
+                    <div class="day-item"><span class="day-num">Day 104</span> <span><span class="tag project">Project</span> Cryptocurrency Tracker (CoinGecko).</span></div>
+                    <div class="day-item"><span class="day-num">Day 105</span> <span><span class="tag research">Research</span> API Authentication (Keys, Bearer Tokens).</span></div>
+                </div>
+
+                <div class="week-block">
+                    <h3>Week 16: Web Scraping</h3>
+                    <div class="day-item"><span class="day-num">Day 106</span> <span><strong>HTML Basics.</strong> Tags, Attributes, DOM structure.</span></div>
+                    <div class="day-item"><span class="day-num">Day 107</span> <span><strong>BeautifulSoup 1.</strong> Installing and parsing.</span></div>
+                    <div class="day-item"><span class="day-num">Day 108</span> <span><strong>BeautifulSoup 2.</strong> <code>find()</code> and <code>find_all()</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 109</span> <span><strong>Scraping Text.</strong> Headlines and paragraphs.</span></div>
+                    <div class="day-item"><span class="day-num">Day 110</span> <span><strong>Scraping Links.</strong> Extracting <code>href</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 111</span> <span><span class="tag project">Project</span> News Scraper.</span></div>
+                    <div class="day-item"><span class="day-num">Day 112</span> <span><strong>Intro to Selenium.</strong> Dynamic content/JavaScript.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: Phase 8 -->
+        <section class="slide" id="slide-8">
+            <div class="slide-content">
+                <h1>Phase 8: Databases & Automation</h1>
+                <p><strong>Weeks 17–18</strong> | Focus: Persistent storage and automation.</p>
+
+                <div class="week-block">
+                    <h3>Week 17: SQL & Databases</h3>
+                    <div class="day-item"><span class="day-num">Day 113</span> <span><strong>SQL Basics.</strong> SELECT, FROM, WHERE.</span></div>
+                    <div class="day-item"><span class="day-num">Day 114</span> <span><strong>SQLite in Python.</strong> <code>import sqlite3</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 115</span> <span><strong>Creating Tables.</strong> CREATE TABLE commands.</span></div>
+                    <div class="day-item"><span class="day-num">Day 116</span> <span><strong>Inserting Data.</strong> INSERT INTO via Python.</span></div>
+                    <div class="day-item"><span class="day-num">Day 117</span> <span><strong>Querying Data.</strong> Running SELECT queries.</span></div>
+                    <div class="day-item"><span class="day-num">Day 118</span> <span><span class="tag project">Project</span> Employee Database.</span></div>
+                    <div class="day-item"><span class="day-num">Day 119</span> <span><span class="tag research">Research</span> PostgreSQL vs. MySQL vs. SQLite.</span></div>
+                </div>
+
+                <div class="week-block">
+                    <h3>Week 18: Automation</h3>
+                    <div class="day-item"><span class="day-num">Day 120</span> <span><strong>OS Module.</strong> Navigating file systems.</span></div>
+                    <div class="day-item"><span class="day-num">Day 121</span> <span><strong>Scheduling.</strong> <code>time</code> and <code>schedule</code> lib.</span></div>
+                    <div class="day-item"><span class="day-num">Day 122</span> <span><strong>Email Automation.</strong> <code>smtplib</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 123</span> <span><strong>Web Automation.</strong> Selenium logins.</span></div>
+                    <div class="day-item"><span class="day-num">Day 124</span> <span><span class="tag project">Project</span> Price Alert Bot.</span></div>
+                    <div class="day-item"><span class="day-num">Day 125</span> <span><strong>Excel Automation.</strong> <code>openpyxl</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 126</span> <span><strong>Review.</strong> Consolidate scripts.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 10: Phase 9 -->
+        <section class="slide" id="slide-9">
+            <div class="slide-content">
+                <h1>Phase 9: Machine Learning Basics</h1>
+                <p><strong>Weeks 19–21</strong> | Focus: Predictive modeling.</p>
+
+                <div class="week-block">
+                    <h3>Week 19: ML Concepts</h3>
+                    <div class="day-item"><span class="day-num">Day 127</span> <span><strong>What is ML?</strong> Supervised vs. Unsupervised.</span></div>
+                    <div class="day-item"><span class="day-num">Day 128</span> <span><strong>Scikit-Learn.</strong> Setup, Features vs. Labels.</span></div>
+                    <div class="day-item"><span class="day-num">Day 129</span> <span><strong>Preprocessing.</strong> Scaling (StandardScaler), Train/Test Split.</span></div>
+                    <div class="day-item"><span class="day-num">Day 130</span> <span><strong>Linear Regression.</strong> Predicting continuous numbers.</span></div>
+                    <div class="day-item"><span class="day-num">Day 131</span> <span><strong>Model Evaluation.</strong> MAE, R2 Score.</span></div>
+                    <div class="day-item"><span class="day-num">Day 132</span> <span><span class="tag project">Project</span> Housing Price Predictor.</span></div>
+                    <div class="day-item"><span class="day-num">Day 133</span> <span><span class="tag research">Research</span> Overfitting vs. Underfitting.</span></div>
+                </div>
+
+                <div class="week-block">
+                    <h3>Week 20: Classification</h3>
+                    <div class="day-item"><span class="day-num">Day 134</span> <span><strong>Logistic Regression.</strong></span></div>
+                    <div class="day-item"><span class="day-num">Day 135</span> <span><strong>K-Nearest Neighbors (KNN).</strong></span></div>
+                    <div class="day-item"><span class="day-num">Day 136</span> <span><strong>Decision Trees.</strong> Visualizing logic.</span></div>
+                    <div class="day-item"><span class="day-num">Day 137</span> <span><strong>Metrics.</strong> Confusion Matrix, Precision, Recall.</span></div>
+                    <div class="day-item"><span class="day-num">Day 138</span> <span><span class="tag project">Project</span> Spam Classifier.</span></div>
+                    <div class="day-item"><span class="day-num">Day 139</span> <span><span class="tag project">Project</span> Iris Flower Classification.</span></div>
+                    <div class="day-item"><span class="day-num">Day 140</span> <span><span class="tag research">Deep Dive</span> Support Vector Machines (SVM).</span></div>
+                </div>
+
+                <div class="week-block">
+                    <h3>Week 21: Advanced ML Intro</h3>
+                    <div class="day-item"><span class="day-num">Day 141</span> <span><strong>Clustering.</strong> K-Means (Unsupervised).</span></div>
+                    <div class="day-item"><span class="day-num">Day 142</span> <span><span class="tag project">Project</span> Customer Segmentation.</span></div>
+                    <div class="day-item"><span class="day-num">Day 143</span> <span><strong>Neural Networks.</strong> Perceptrons concept.</span></div>
+                    <div class="day-item"><span class="day-num">Day 144</span> <span><strong>TensorFlow/PyTorch.</strong> Installation & Hello World.</span></div>
+                    <div class="day-item"><span class="day-num">Day 145</span> <span><strong>Recommendation Systems.</strong> Collaborative filtering.</span></div>
+                    <div class="day-item"><span class="day-num">Day 146</span> <span><strong>Model Saving.</strong> <code>pickle</code> and <code>joblib</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 147</span> <span><strong>Review.</strong> Full Pipeline: Clean -> Split -> Train -> Eval.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 11: Phase 10 -->
+        <section class="slide" id="slide-10">
+            <div class="slide-content">
+                <h1>Phase 10: Dashboards & Projects</h1>
+                <p><strong>Weeks 22–23</strong> | Focus: Putting it all together.</p>
+
+                <div class="week-block">
+                    <h3>Week 22: Streamlit</h3>
+                    <div class="day-item"><span class="day-num">Day 148</span> <span><strong>Intro.</strong> Installation, <code>st.title()</code>, <code>st.write()</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 149</span> <span><strong>Input Widgets.</strong> Sliders, buttons, text input.</span></div>
+                    <div class="day-item"><span class="day-num">Day 150</span> <span><strong>Data Display.</strong> <code>st.dataframe()</code>, <code>st.line_chart()</code>.</span></div>
+                    <div class="day-item"><span class="day-num">Day 151</span> <span><strong>Connecting ML.</strong> Load pickled model.</span></div>
+                    <div class="day-item"><span class="day-num">Day 152</span> <span><span class="tag project">Project</span> ML Deployment (Web App).</span></div>
+                    <div class="day-item"><span class="day-num">Day 153</span> <span><strong>Layout.</strong> Columns and Sidebars.</span></div>
+                    <div class="day-item"><span class="day-num">Day 154</span> <span><strong>Refinement.</strong> Professional UI polish.</span></div>
+                </div>
+
+                <div class="week-block">
+                    <h3>Week 23: Capstone Project</h3>
+                    <div class="day-item"><span class="day-num">Day 155</span> <span><strong>Planning.</strong> Define a problem (e.g., Global CO2).</span></div>
+                    <div class="day-item"><span class="day-num">Day 156</span> <span><strong>Data Collection.</strong> Download or Scrape.</span></div>
+                    <div class="day-item"><span class="day-num">Day 157</span> <span><strong>Cleaning.</strong> Pandas work.</span></div>
+                    <div class="day-item"><span class="day-num">Day 158</span> <span><strong>Visualization.</strong> Create charts.</span></div>
+                    <div class="day-item"><span class="day-num">Day 159</span> <span><strong>ML Component.</strong> Add prediction.</span></div>
+                    <div class="day-item"><span class="day-num">Day 160</span> <span><strong>Dashboarding.</strong> Build final Streamlit app.</span></div>
+                    <div class="day-item"><span class="day-num">Day 161</span> <span><strong>Testing.</strong> Click everything. Fix bugs.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 12: Phase 11 -->
+        <section class="slide" id="slide-11">
+            <div class="slide-content">
+                <h1>Phase 11: Specialization & Career</h1>
+                <p><strong>Week 24</strong> | Focus: Next steps and final polish.</p>
+
+                <div class="week-block">
+                    <h3>Week 24: Finalization</h3>
+                    <div class="day-item"><span class="day-num">Day 162</span> <span><strong>GitHub.</strong> Push all projects to a repository.</span></div>
+                    <div class="day-item"><span class="day-num">Day 163</span> <span><strong>Readme.md.</strong> Write professional documentation for Capstone.</span></div>
+                    <div class="day-item"><span class="day-num">Day 164</span> <span><strong>Portfolio.</strong> Choose specialization path (Data vs Web vs Auto).</span></div>
+                    <div class="day-item"><span class="day-num">Day 165</span> <span><span class="tag research">Research</span> Job descriptions. Note lacking skills.</span></div>
+                    <div class="day-item"><span class="day-num">Day 166</span> <span><strong>Advanced Topic.</strong> Spend 2 hours on one advanced thing (FastAPI/AWS).</span></div>
+                    <div class="day-item"><span class="day-num">Day 167</span> <span><strong>Review.</strong> Look at code from Day 1. Appreciate progress.</span></div>
+                    <div class="day-item"><span class="day-num">Day 168</span> <span><strong>The Future.</strong> Plan the next 6 months.</span></div>
+                </div>
+
+                <div class="week-block" style="margin-top: 2rem; border-color: var(--accent-success);">
+                    <h3>Recommended Resources</h3>
+                    <ul>
+                        <li><strong>Docs:</strong> Python.org, Pandas.pydata.org</li>
+                        <li><strong>Practice:</strong> HackerRank, LeetCode (Easy), Kaggle</li>
+                        <li><strong>Help:</strong> StackOverflow, ChatGPT (for debugging logic, not writing all code)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="slide-indicator" id="slideIndicator">1 / 12</div>
+        <div class="controls">
+            <button id="prevBtn" onclick="changeSlide(-1)">
+                &#8592; Prev
+            </button>
+            <button id="nextBtn" onclick="changeSlide(1)">
+                Next &#8594;
+            </button>
+        </div>
+    </footer>
+
+    <script>
+        // State
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const progressBar = document.getElementById('progressBar');
+        const slideIndicator = document.getElementById('slideIndicator');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        // Initial Update
+        updateUI();
+
+        // Function to change slide
+        function changeSlide(direction) {
+            // Remove active class from current
+            slides[currentSlide].classList.remove('active');
+            
+            // Update index
+            currentSlide += direction;
+
+            // Boundaries
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide >= totalSlides) currentSlide = totalSlides - 1;
+
+            // Add active class to new current
+            slides[currentSlide].classList.add('active');
+
+            // Scroll content to top of new slide
+            const content = slides[currentSlide].querySelector('.slide-content');
+            if(content) content.scrollTop = 0;
+
+            updateUI();
+        }
+
+        // Update UI elements (Buttons, Progress, Text)
+        function updateUI() {
+            // Progress Bar
+            const progressPercentage = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+
+            // Text Indicator
+            slideIndicator.textContent = `${currentSlide + 1} / ${totalSlides}`;
+
+            // Button States
+            prevBtn.disabled = (currentSlide === 0);
+            nextBtn.disabled = (currentSlide === totalSlides - 1);
+        }
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+        });
+    </script>
+</body>
+</html>
